@@ -1,5 +1,9 @@
 var turno = 0
 var fichas = 1
+var valorTurno = false
+var msg = ""
+var turnosRestantes = 9
+var hayGanador = false
 
 var ganador = [];
 
@@ -31,7 +35,8 @@ function CambiarAXO(idBoton) {
 
 function InicializarJuego() {
     turno = getRandomTurno()
-    document.getElementById("card-header-turno").removeAttribute("hidden")
+    //document.getElementById("card-header-turno").removeAttribute("hidden")    ---- lo reemplace por la funcion MostrarTurno()
+    MostrarTurno(!true)
     ResetBoard()
     AsignarFicha()
 }
@@ -88,14 +93,28 @@ function AnalizarSiGanoQuienToco() {
         if (turno === 0) {
             bloquearRestantes()
             sendWinner("2")
+            hayGanador = true
             //alert("El jugador 2 es el ganador")
         } else if (turno === 1) {
             bloquearRestantes()
             sendWinner("1")
+            hayGanador = true
             //alert("El jugador 1 es el ganador")
         }
         pintarGanador()
+        MostrarTurno(!false)
     }
+    turnosRestantes--
+
+    if(turnosRestantes === 0 && !hayGanador){
+        alert("EMPATE")
+        MostrarTurno(!false)
+        sendWinner("3")
+    }
+}
+
+function MostrarTurno(valorTurno){
+    document.getElementById("card-header-turno").hidden = valorTurno
 }
 
 function ResetBoard(){
@@ -109,6 +128,9 @@ function ResetBoard(){
         fichas++
     }
     fichas = 1
+    turnosRestantes = 9
+    hayGanador = false
+    document.getElementById("card-body-container").hidden = true
 }
 
 function getRandomTurno() {
@@ -116,9 +138,12 @@ function getRandomTurno() {
 }
 
 function sendWinner(winner_number){
-    let msg = "El jugador número " + winner_number + " es el ganador";
+    if(winner_number == 3){
+        msg = "Los jugadores empataron"
+    }else{
+        msg = "El jugador número " + winner_number + " es el ganador"
+    }    
     let winner_msg = document.getElementById("card-body-winner-message")
     winner_msg.innerHTML = msg
     document.getElementById("card-body-container").removeAttribute("hidden")
-
 }
